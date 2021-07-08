@@ -1,0 +1,63 @@
+#!/bin/sh
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' 
+
+
+lint=$(npm run lint -s)
+
+if [[ $lint == *"problem"* ]]; then
+	echo " ${RED}Aborting push by LINT >>>>>> ${NC}"
+	exit 1
+fi
+echo "${GREEN} Validated by Lint ${NC}"
+
+
+ exitcode=$?
+      npm run lint
+      if [ "$exitcode" != "0" ]; then exit 1; fi
+
+SCOPE=dev
+
+cmd="npm run test"
+$cmd
+status=$?
+
+if [[ $status != 0 ]]; then
+	echo " ${RED}Aborting push by TEST >>>>>> ${NC}"
+	exit 1
+fi
+echo "${GREEN} Validated by TEST ${NC}"
+
+
+exec </dev/tty
+
+	read -n 1 -p "CHANGELOG? [y/n] " yesno
+
+	case $yesno in
+	[yY])
+        echo " " >> CHANGELOG.md
+        git add CHANGELOG.md
+        git commit -m 'CHANGELOG'
+
+		
+        echo "${GREEN}"
+        echo "*****"
+		echo "finished with CHANGELOG !!!"
+        echo "*****${NC}"
+		exit 0
+		;;
+
+	[nN])
+        echo "${GREEN}"
+        echo "*****"
+		echo "finished!!!"
+        echo "*****${NC}"
+		exit 0
+		;;
+	esac
+
+	exec <&-
+
+
