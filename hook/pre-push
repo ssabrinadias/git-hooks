@@ -39,7 +39,7 @@ exec </dev/tty
 	[yY])
         echo " " >> CHANGELOG.md
         git add CHANGELOG.md
-        git commit -m 'CHANGELOG'
+        git commit -m 'CHANGELOG .'
 
 		
         echo "${GREEN}"
