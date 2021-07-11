@@ -70,11 +70,34 @@ exec </dev/tty
 			done
 		done
 		
-     	echo "${GREEN}"
-        echo "*****"
-		echo "finished!!!"
-        echo "*****${NC}"
-		exit 0
+     	exec </dev/tty
+
+		read -n 1 -p ">>>>> CHANGELOG? [y/n] " yesno
+
+		case $yesno in
+			[yY])
+				echo " " >> CHANGELOG.md
+				git add CHANGELOG.md
+				git commit -m 'CHANGELOG'
+
+				
+				echo "${GREEN}"
+				echo "*****"
+				echo "finished with CHANGELOG !!!"
+				echo "*****${NC}"
+				exit 0
+				;;
+
+			[nN])
+				echo "${GREEN}"
+				echo "*****"
+				echo "finished!!!"
+				echo "*****${NC}"
+				exit 0
+				;;
+			esac
+
+		exec <&-
 		;;
 
 	[nN])
