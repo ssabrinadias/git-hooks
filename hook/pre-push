@@ -20,7 +20,7 @@ echo "${GREEN} Validated by Lint ${NC}"
 
 SCOPE=dev
 
-cmd="./node_modules/.bin/jest --config jest.config.js  --coverageReporters='text-summary'"
+cmd="./node_modules/.bin/jest --config jest.config.js --coverage  --coverageReporters='json-summary'"
 $cmd
 status=$?
 
