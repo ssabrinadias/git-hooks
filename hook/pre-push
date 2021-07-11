@@ -1,4 +1,4 @@
-#!/bin/sh
+
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -20,7 +20,7 @@ echo "${GREEN} Validated by Lint ${NC}"
 
 SCOPE=dev
 
-cmd="npm run test"
+cmd="./node_modules/.bin/jest --config jest.config.js  --coverageReporters='text-summary'"
 $cmd
 status=$?
 
@@ -33,24 +33,52 @@ echo "${GREEN} Validated by TEST ${NC}"
 
 exec </dev/tty
 
-	read -n 1 -p "CHANGELOG? [y/n] " yesno
+	read -n 1 -p ">>>>> VERIFY ??? [y/n] " yesno
 
 	case $yesno in
 	[yY])
-        echo " " >> CHANGELOG.md
-        git add CHANGELOG.md
-        git commit -m 'CHANGELOG '
+		lint=$(git branch --show-current)
+		diff=$(git diff  feature/VCO-114-new-home-switchs..${lint} --pretty='' --name-only)
 
+
+		for j in $diff
+		do
+			var=$( cat coverage/coverage-summary.json | grep $j )
+
+			IFS=' '  
+			read -ra L <<< "$var" 
+			
+			if [ ! -z "$L" ]
+			then
+				echo ---
+				echo "verificando >>> ${L} ... "
+			fi
+
+			IFS=','  
+			read -ra ADDR <<< "$var" 
+				for i in "${ADDR[@]}"; do 
+				if [[ $i == *"pct"* ]]; then
+					read r <<< $(echo $i | awk '{gsub(/[^0-9_ \t]/,"")}1')
+					
+					if [ "$r" -lt 96 ]; then
+						echo " ${RED}Aborting push by COVERAGE >>>>>> ${NC}"
+						exit 1
+					else 
+						echo "${GREEN} OK ${NC}"
+					fi
+				fi
+			done
+		done
 		
-        echo "${GREEN}"
+     	echo "${GREEN}"
         echo "*****"
-		echo "finished with CHANGELOG !!!"
+		echo "finished!!!"
         echo "*****${NC}"
 		exit 0
 		;;
 
 	[nN])
-        echo "${GREEN}"
+     	echo "${GREEN}"
         echo "*****"
 		echo "finished!!!"
         echo "*****${NC}"
@@ -58,6 +86,4 @@ exec </dev/tty
 		;;
 	esac
 
-	exec <&-
-
-
+exec <&-
