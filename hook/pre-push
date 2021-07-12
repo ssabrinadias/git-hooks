@@ -1,9 +1,6 @@
-
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' 
-
 
 lint=$(npm run lint -s)
 
@@ -20,7 +17,7 @@ echo "${GREEN} Validated by Lint ${NC}"
 
 SCOPE=dev
 
-cmd="./node_modules/.bin/jest --config jest.config.js --coverage  --coverageReporters='json-summary'"
+cmd="./node_modules/.bin/jest --config jest.config.js   --coverage --coverageReporters='json-summary'"
 $cmd
 status=$?
 
@@ -31,6 +28,7 @@ fi
 echo "${GREEN} Validated by TEST ${NC}"
 
 
+
 exec </dev/tty
 
 	read -n 1 -p ">>>>> VERIFY ??? [y/n] " yesno
@@ -38,8 +36,7 @@ exec </dev/tty
 	case $yesno in
 	[yY])
 		lint=$(git branch --show-current)
-		diff=$(git diff  develop..${lint} --pretty='' --name-only)
-
+		diff=$(git diff  feature/VCO-114-new-home-switchs..${lint} --pretty='' --name-only)
 
 		for j in $diff
 		do
@@ -54,14 +51,15 @@ exec </dev/tty
 				echo "verificando >>> ${L} ... "
 			fi
 
-			IFS=','  
-			read -ra ADDR <<< "$var" 
+				IFS=','  
+				read -ra ADDR <<< "$var" 
+	
 				for i in "${ADDR[@]}"; do 
 				if [[ $i == *"pct"* ]]; then
-					read r <<< $(echo $i | awk '{gsub(/[^0-9_ \t]/,"")}1')
-					
-					if [ "$r" -lt 96 ]; then
-						echo " ${RED}Aborting push by COVERAGE >>>>>> ${NC}"
+					read r <<< $(echo $i | awk '{gsub(/[^0-9\.\t]/,"")}1')
+					read t <<< $(echo  "($r+0.5)/1" | bc)
+					if [ "$t" -lt 96 ]; then
+						echo " ${RED}Aborting push by COVERAGE ${r} ${NC}"
 						exit 1
 					else 
 						echo "${GREEN} OK ${NC}"
@@ -110,3 +108,9 @@ exec </dev/tty
 	esac
 
 exec <&-
+
+
+echo "${GREEN}"
+echo "*****"
+echo "finished!!!"
+echo "*****${NC}"
