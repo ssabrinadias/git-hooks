@@ -42,7 +42,7 @@ exec </dev/tty
 	case $yesno in
 	[yY])
 		lint=$(git branch --show-current)
-		diff=$(git diff  feature/VCO-114-new-home-switchs..${lint} --pretty='' --name-only)
+		diff=$(git diff  develop..${lint} --pretty='' --name-only)
 
 		for j in $diff
 		do
