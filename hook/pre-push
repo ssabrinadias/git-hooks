@@ -31,7 +31,13 @@ echo "${GREEN} Validated by TEST ${NC}"
 
 exec </dev/tty
 
-	read -n 1 -p ">>>>> VERIFY ??? [y/n] " yesno
+	read -n 1 -p "
+---------------------
+
+>>>>> CHECK COVERAGE ? [y/n] 
+
+---------------------
+-> " yesno
 
 	case $yesno in
 	[yY])
@@ -47,8 +53,13 @@ exec </dev/tty
 			
 			if [ ! -z "$L" ]
 			then
-				echo ---
-				echo "verificando >>> ${L} ... "
+				echo
+				echo "-----------------"
+				echo "| "
+				echo "| verificando ... "
+				echo "| -> ${L}  "
+				echo "| "
+				echo "-----------------"
 			fi
 
 				IFS=','  
@@ -62,7 +73,7 @@ exec </dev/tty
 						echo " ${RED}Aborting push by COVERAGE ${r} ${NC}"
 						exit 1
 					else 
-						echo "${GREEN} OK ${NC}"
+						echo "${GREEN} ${r} OK ${NC}"
 					fi
 				fi
 			done
@@ -70,7 +81,13 @@ exec </dev/tty
 		
      	exec </dev/tty
 
-		read -n 1 -p ">>>>> CHANGELOG? [y/n] " yesno
+		read -n 1 -p "
+------------------------
+
+>>>>> INCLUDE CHANGELOG ? [y/n] 
+
+------------------------ 
+-> " yesno
 
 		case $yesno in
 			[yY])
